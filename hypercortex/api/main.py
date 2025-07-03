@@ -3,11 +3,13 @@ FastAPI Main Application for HyperCortex-AI
 """
 
 import asyncio
+import os
 from contextlib import asynccontextmanager
 from typing import Dict, List, Any, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import structlog
 
@@ -536,6 +538,21 @@ async def get_metrics():
     except Exception as e:
         logger.error(f"Error getting metrics: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Static file serving and UI
+static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+@app.get("/ui")
+async def serve_ui():
+    """Serve the web UI"""
+    static_file = os.path.join(static_dir, "index.html")
+    if os.path.exists(static_file):
+        return FileResponse(static_file)
+    else:
+        raise HTTPException(status_code=404, detail="UI not found")
 
 
 if __name__ == "__main__":

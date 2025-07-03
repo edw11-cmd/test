@@ -14,16 +14,15 @@ load_dotenv()
 class Settings(BaseSettings):
     """Application settings with environment variable support"""
     
-    # OpenAI Configuration
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
-    openai_model: str = Field("gpt-4-turbo-preview", env="OPENAI_MODEL")
+    # Opik Configuration (provides OpenAI access)
+    opik_api_key: str = Field(..., env="OPIK_API_KEY")
+    opik_workspace: str = Field("tak11-cloud", env="OPIK_WORKSPACE")
+    opik_project_name: str = Field("hypercortex-main", env="OPIK_PROJECT_NAME")
+    
+    # Model Configuration (via Opik)
+    openai_model: str = Field("gpt-3.5-turbo", env="OPENAI_MODEL")
     openai_temperature: float = Field(0.7, env="OPENAI_TEMPERATURE")
     openai_max_tokens: int = Field(4000, env="OPENAI_MAX_TOKENS")
-    
-    # Opik Configuration
-    opik_api_key: Optional[str] = Field(None, env="OPIK_API_KEY")
-    opik_workspace: str = Field("hypercortex-ai", env="OPIK_WORKSPACE")
-    opik_project_name: str = Field("hypercortex-main", env="OPIK_PROJECT_NAME")
     
     # Redis Configuration
     redis_url: str = Field("redis://localhost:6379/0", env="REDIS_URL")

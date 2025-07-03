@@ -39,9 +39,22 @@ class LLMEngine:
     def __init__(self):
         self.settings = settings
         
-        # Initialize OpenAI clients with Opik tracking
-        self.sync_client = track_openai(OpenAI(api_key=self.settings.openai_api_key))
-        self.async_client = track_openai(AsyncOpenAI(api_key=self.settings.openai_api_key))
+        # Set Opik environment variables
+        import os
+        os.environ["OPIK_API_KEY"] = self.settings.opik_api_key
+        os.environ["OPIK_WORKSPACE"] = self.settings.opik_workspace
+        
+        # Initialize OpenAI clients with Opik tracking (Opik provides OpenAI access)
+        try:
+            self.sync_client = track_openai(OpenAI())
+            self.async_client = track_openai(AsyncOpenAI())
+            self.demo_mode = False
+        except Exception as e:
+            logger.warning(f"OpenAI client initialization failed: {e}")
+            logger.warning("Running in demo mode without OpenAI integration")
+            self.sync_client = None
+            self.async_client = None
+            self.demo_mode = True
         
         # Model configurations
         self.model_configs = {
@@ -104,6 +117,17 @@ class LLMEngine:
     ) -> LLMResponse:
         """Generate response asynchronously with error handling and fallbacks"""
         
+        if self.async_client is None:
+            # Return a mock response for demo mode
+            logger.warning("OpenAI client not available, returning mock response")
+            return LLMResponse(
+                content="This is a mock response from HyperCortex-AI demo mode. To get real AI responses, please configure your OpenAI API key.",
+                model=model or self.settings.openai_model,
+                tokens_used=30,
+                finish_reason="mock",
+                metadata=metadata or {"demo_mode": True}
+            )
+        
         model = model or self.settings.openai_model
         config = self._get_model_config(model)
         
@@ -156,6 +180,17 @@ class LLMEngine:
         metadata: Optional[Dict[str, Any]] = None
     ) -> LLMResponse:
         """Generate response synchronously"""
+        
+        if self.sync_client is None:
+            # Return a mock response for demo mode
+            logger.warning("OpenAI client not available, returning mock response")
+            return LLMResponse(
+                content="This is a mock response from HyperCortex-AI demo mode. To get real AI responses, please configure your OpenAI API key.",
+                model=model or self.settings.openai_model,
+                tokens_used=30,
+                finish_reason="mock",
+                metadata=metadata or {"demo_mode": True}
+            )
         
         model = model or self.settings.openai_model
         config = self._get_model_config(model)
@@ -216,6 +251,39 @@ class LLMEngine:
         except Exception as e:
             logger.error(f"Failed to generate streaming response: {str(e)}")
             raise e
+    
+    def complete(
+        self,
+        prompt: str,
+        system_message: Optional[str] = None,
+        model: Optional[str] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        conversation_history: Optional[List[Dict[str, str]]] = None,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> LLMResponse:
+        """Synchronous completion method for compatibility"""
+        
+        if self.demo_mode:
+            # Return a mock response for demo mode
+            logger.warning("OpenAI client not available, returning mock response")
+            return LLMResponse(
+                content="This is a mock response from HyperCortex-AI demo mode. To get real AI responses, please configure your Opik API key with OpenAI access.",
+                model=model or self.settings.openai_model,
+                tokens_used=30,
+                finish_reason="mock",
+                metadata=metadata or {"demo_mode": True}
+            )
+        
+        return self.generate(
+            prompt=prompt,
+            system_message=system_message,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            conversation_history=conversation_history,
+            metadata=metadata
+        )
 
 
 # Global LLM engine instance

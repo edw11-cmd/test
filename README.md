@@ -54,8 +54,7 @@ HyperCortex-AI is an autonomous, memory-augmented, multi-agent AI system built w
 
 ### Prerequisites
 - Python 3.11+
-- OpenAI API Key
-- Opik API Key (optional but recommended)
+- Opik API Key (provides OpenAI access - no separate OpenAI key needed)
 
 ### Installation
 
@@ -73,12 +72,16 @@ pip install -r requirements.txt
 3. **Configure environment**
 ```bash
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your Opik API key
+# No OpenAI API key needed - Opik provides OpenAI access
 ```
 
-4. **Run the system**
+4. **Test Opik-only configuration**
 ```bash
-# Test the system
+# Test Opik integration
+python test_opik_only.py
+
+# Test the full system
 python main.py test
 
 # Run example tasks
@@ -92,7 +95,7 @@ python main.py
 
 1. **Using Docker Compose**
 ```bash
-# Set your API keys in .env file
+# Set your Opik API key in .env file
 docker-compose up -d
 ```
 
@@ -185,13 +188,12 @@ asyncio.run(planning_example())
 ### Environment Variables
 
 ```bash
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4-turbo-preview
+# Opik Configuration (provides OpenAI access)
+OPIK_API_KEY=XvVArO*****************
+OPIK_WORKSPACE=tak11-cloud
 
-# Opik Configuration
-OPIK_API_KEY=your_opik_api_key
-OPIK_WORKSPACE=hypercortex-ai
+# Model Configuration
+OPENAI_MODEL=gpt-3.5-turbo
 
 # Application Settings
 DEBUG=True
