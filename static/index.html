@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperCortex-AI - Advanced Multi-Agent AI Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-dot.online {
+            background: #4CAF50;
+        }
+
+        .status-dot.offline {
+            background: #f44336;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .message.user {
+            background: #667eea;
+            color: white;
+            margin-left: 20%;
+        }
+
+        .message.agent {
+            background: #e3f2fd;
+            margin-right: 20%;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: #5a6fd8;
+        }
+
+        .chat-input button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .agent-selector {
+            margin-bottom: 15px;
+        }
+
+        .agent-selector select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 HyperCortex-AI</h1>
+            <p>Advanced Multi-Agent AI Framework with OpenAI & Opik Integration</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>🔧 System Status</h3>
+                <div class="status">
+                    <div class="status-dot online"></div>
+                    <span>System Online</span>
+                </div>
+                <div id="system-info">
+                    <p><strong>Version:</strong> <span id="version">Loading...</span></p>
+                    <p><strong>Agents:</strong> <span id="agent-count">Loading...</span></p>
+                    <p><strong>Tools:</strong> <span id="tool-count">Loading...</span></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🤖 Active Agents</h3>
+                <div id="agents-list">
+                    Loading agents...
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🛠️ Available Tools</h3>
+                <div id="tools-list">
+                    Loading tools...
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 System Metrics</h3>
+                <div class="metrics" id="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="uptime">--</div>
+                        <div class="metric-label">Uptime (s)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="requests">--</div>
+                        <div class="metric-label">Requests</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <h3>💬 Chat with Agents</h3>
+            <div class="agent-selector">
+                <label for="agent-select">Select Agent: </label>
+                <select id="agent-select">
+                    <option value="researcher">Research Agent</option>
+                    <option value="planner">Planner Agent</option>
+                    <option value="coder">Coder Agent</option>
+                </select>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message agent">
+                    <strong>HyperCortex-AI:</strong> Hello! I'm your advanced AI assistant. How can I help you today?
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" id="send-button">Send</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>HyperCortex-AI - Pushing the boundaries of what's possible with AI agents 🚀</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+
+        // Load system information
+        async function loadSystemInfo() {
+            try {
+                const response = await fetch('/');
+                const data = await response.json();
+                document.getElementById('version').textContent = data.version;
+            } catch (error) {
+                console.error('Error loading system info:', error);
+            }
+        }
+
+        // Load agents
+        async function loadAgents() {
+            try {
+                const response = await fetch('/agents');
+                const agents = await response.json();
+                
+                document.getElementById('agent-count').textContent = Object.keys(agents).length;
+                
+                const agentsList = document.getElementById('agents-list');
+                agentsList.innerHTML = '';
+                
+                for (const [name, agent] of Object.entries(agents)) {
+                    const agentDiv = document.createElement('div');
+                    agentDiv.innerHTML = `
+                        <div class="status">
+                            <div class="status-dot ${agent.state === 'idle' ? 'online' : 'offline'}"></div>
+                            <span><strong>${agent.name}</strong> (${agent.state})</span>
+                        </div>
+                    `;
+                    agentsList.appendChild(agentDiv);
+                }
+            } catch (error) {
+                console.error('Error loading agents:', error);
+            }
+        }
+
+        // Load tools
+        async function loadTools() {
+            try {
+                const response = await fetch('/tools');
+                const data = await response.json();
+                
+                document.getElementById('tool-count').textContent = data.count;
+                
+                const toolsList = document.getElementById('tools-list');
+                toolsList.innerHTML = '';
+                
+                for (const [name, tool] of Object.entries(data.tools)) {
+                    const toolDiv = document.createElement('div');
+                    toolDiv.innerHTML = `
+                        <div style="margin-bottom: 10px;">
+                            <strong>${tool.name}</strong><br>
+                            <small>${tool.description}</small>
+                        </div>
+                    `;
+                    toolsList.appendChild(toolDiv);
+                }
+            } catch (error) {
+                console.error('Error loading tools:', error);
+            }
+        }
+
+        // Load metrics
+        async function loadMetrics() {
+            try {
+                const response = await fetch('/metrics');
+                const metrics = await response.json();
+                
+                document.getElementById('uptime').textContent = Math.round(metrics.system.uptime_seconds);
+                document.getElementById('requests').textContent = metrics.system.request_count;
+            } catch (error) {
+                console.error('Error loading metrics:', error);
+                document.getElementById('uptime').textContent = '--';
+                document.getElementById('requests').textContent = '--';
+            }
+        }
+
+        // Send message to agent
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const agentSelect = document.getElementById('agent-select');
+            const messagesContainer = document.getElementById('chat-messages');
+            
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `<strong>You:</strong> ${message}`;
+            messagesContainer.appendChild(userMessage);
+            
+            // Clear input and disable button
+            input.value = '';
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<div class="loading"></div>';
+            
+            // Add loading message
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'message agent';
+            loadingMessage.innerHTML = '<strong>Agent:</strong> <div class="loading"></div> Thinking...';
+            messagesContainer.appendChild(loadingMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        agent: agentSelect.value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Remove loading message
+                messagesContainer.removeChild(loadingMessage);
+                
+                // Add agent response
+                const agentMessage = document.createElement('div');
+                agentMessage.className = 'message agent';
+                agentMessage.innerHTML = `<strong>${data.agent_used} Agent:</strong> ${data.response}`;
+                messagesContainer.appendChild(agentMessage);
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                
+                // Remove loading message
+                messagesContainer.removeChild(loadingMessage);
+                
+                // Add error message
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'message agent';
+                errorMessage.innerHTML = '<strong>System:</strong> Sorry, there was an error processing your request.';
+                messagesContainer.appendChild(errorMessage);
+            }
+            
+            // Re-enable button
+            sendButton.disabled = false;
+            sendButton.innerHTML = 'Send';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize the dashboard
+        async function init() {
+            await loadSystemInfo();
+            await loadAgents();
+            await loadTools();
+            await loadMetrics();
+            
+            // Refresh metrics every 30 seconds
+            setInterval(loadMetrics, 30000);
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>

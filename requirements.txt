@@ -1,0 +1,44 @@
+# Core Framework
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+python-multipart>=0.0.6
+
+# OpenAI and Opik Integration
+openai>=1.0.0
+# opik==0.2.0  # Commented out as it may not be available
+
+# Multi-Agent Framework (simplified)
+# langgraph==0.0.62  # Commented out for compatibility
+# langchain==0.0.350  # Commented out for compatibility
+# langchain-openai==0.0.2  # Commented out for compatibility
+# crewai==0.22.5  # Commented out for compatibility
+
+# Memory and Vector Storage
+redis>=5.0.0
+faiss-cpu>=1.7.0
+# chromadb==0.4.18  # Commented out for compatibility
+numpy>=1.20.0
+sentence-transformers>=2.0.0
+
+# Async and HTTP
+httpx>=0.25.0
+aioredis>=2.0.0
+
+# Data Processing
+pandas>=2.0.0
+sqlalchemy>=2.0.0
+
+# Security and Environment
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.0
+python-dotenv>=1.0.0
+cryptography>=40.0.0
+
+# Monitoring and Logging
+structlog>=23.0.0
+
+# Additional Tools
+jinja2>=3.1.0
+requests>=2.31.0
